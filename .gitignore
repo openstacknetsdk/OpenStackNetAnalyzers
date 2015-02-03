@@ -1,0 +1,9 @@
+# Build output
+packages/
+bin/
+obj/
+
+# Per-user files created by Visual Studio
+.vs/
+*.suo
+*.csproj.user

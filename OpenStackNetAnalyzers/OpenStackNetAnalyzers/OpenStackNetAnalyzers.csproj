@@ -35,6 +35,7 @@
     <Compile Include="AssertNullAnalyzer.cs" />
     <Compile Include="JsonObjectOptInAnalyzer.cs" />
     <Compile Include="JsonPropertyDefaultValueHandlingAnalyzer.cs" />
+    <Compile Include="JsonPropertyDefaultValueHandlingCodeFix.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

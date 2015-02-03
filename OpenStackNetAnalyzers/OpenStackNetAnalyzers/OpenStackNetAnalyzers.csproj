@@ -34,9 +34,11 @@
   <ItemGroup>
     <Compile Include="AssertNullAnalyzer.cs" />
     <Compile Include="JsonObjectOptInAnalyzer.cs" />
+    <Compile Include="JsonObjectOptInCodeFix.cs" />
     <Compile Include="JsonPropertyDefaultValueHandlingAnalyzer.cs" />
     <Compile Include="JsonPropertyDefaultValueHandlingCodeFix.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpacingExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Diagnostic.nuspec">

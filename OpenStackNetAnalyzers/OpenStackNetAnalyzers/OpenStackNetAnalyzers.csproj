@@ -42,6 +42,8 @@
     <Compile Include="JsonPropertyDefaultValueHandlingAnalyzer.cs" />
     <Compile Include="JsonPropertyDefaultValueHandlingCodeFix.cs" />
     <Compile Include="NonNullableJsonPropertyAnalyzer.cs" />
+    <Compile Include="PlaceholderDocumentationAnalyzer.cs" />
+    <Compile Include="PlaceholderDocumentationCodeFix.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpacingExtensions.cs" />
     <Compile Include="XmlSyntaxFactory.cs" />

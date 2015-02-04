@@ -86,6 +86,16 @@
                 .WithLeadingTrivia(SyntaxFactory.Whitespace(" "));
         }
 
+        public static XmlNameAttributeSyntax NameAttribute(string parameterName)
+        {
+            return SyntaxFactory.XmlNameAttribute(
+                SyntaxFactory.XmlName("name"),
+                SyntaxFactory.Token(SyntaxKind.DoubleQuoteToken),
+                parameterName,
+                SyntaxFactory.Token(SyntaxKind.DoubleQuoteToken))
+                .WithLeadingTrivia(SyntaxFactory.Whitespace(" "));
+        }
+
         public static XmlCrefAttributeSyntax CrefAttribute(CrefSyntax cref)
         {
             return CrefAttribute(cref, SyntaxKind.DoubleQuoteToken);
@@ -175,6 +185,17 @@
             return MultiLineElement("value", content);
         }
 
+        public static XmlElementSyntax ExceptionElement(CrefSyntax cref, params XmlNodeSyntax[] content)
+        {
+            return ExceptionElement(cref, List(content));
+        }
+
+        public static XmlElementSyntax ExceptionElement(CrefSyntax cref, SyntaxList<XmlNodeSyntax> content)
+        {
+            XmlElementSyntax element = Element("exception", content);
+            return element.WithStartTag(element.StartTag.AddAttributes(CrefAttribute(cref)));
+        }
+
         public static XmlElementSyntax ParaElement(params XmlNodeSyntax[] content)
         {
             return ParaElement(List(content));
@@ -185,9 +206,57 @@
             return Element("para", content);
         }
 
+        public static XmlElementSyntax ParamElement(string parameterName, params XmlNodeSyntax[] content)
+        {
+            return ParamElement(parameterName, List(content));
+        }
+
+        public static XmlElementSyntax ParamElement(string parameterName, SyntaxList<XmlNodeSyntax> content)
+        {
+            XmlElementSyntax element = Element("param", content);
+            return element.WithStartTag(element.StartTag.AddAttributes(NameAttribute(parameterName)));
+        }
+
+        public static XmlEmptyElementSyntax ParamRefElement(string parameterName)
+        {
+            return EmptyElement("paramref").AddAttributes(NameAttribute(parameterName));
+        }
+
         public static XmlEmptyElementSyntax SeeElement(CrefSyntax cref)
         {
             return EmptyElement("see").AddAttributes(CrefAttribute(cref));
+        }
+
+        public static XmlEmptyElementSyntax SeeAlsoElement(CrefSyntax cref)
+        {
+            return EmptyElement("seealso").AddAttributes(CrefAttribute(cref));
+        }
+
+        public static XmlElementSyntax SeeAlsoElement(Uri linkAddress, SyntaxList<XmlNodeSyntax> linkText)
+        {
+            XmlElementSyntax element = Element("seealso", linkText);
+            return element.WithStartTag(element.StartTag.AddAttributes(TextAttribute("href", linkAddress.ToString())));
+        }
+
+        public static XmlEmptyElementSyntax NullKeywordElement()
+        {
+            return KeywordElement("null");
+        }
+
+        private static XmlEmptyElementSyntax KeywordElement(string keyword)
+        {
+            return EmptyElement("see").AddAttributes(
+                TextAttribute("langword", keyword));
+        }
+
+        public static XmlElementSyntax PlaceholderElement(params XmlNodeSyntax[] content)
+        {
+            return PlaceholderElement(List(content));
+        }
+
+        public static XmlElementSyntax PlaceholderElement(SyntaxList<XmlNodeSyntax> content)
+        {
+            return Element("placeholder", content);
         }
 
         public static XmlEmptyElementSyntax ThreadSafetyElement()

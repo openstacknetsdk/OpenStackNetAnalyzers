@@ -110,51 +110,21 @@
             {
                 // Need to add a new class for the extension methods.
 
-                DocumentationCommentTriviaSyntax documentationComment = SyntaxFactory.DocumentationCommentTrivia(SyntaxKind.SingleLineDocumentationCommentTrivia)
-                    .AddContent(
-                        SyntaxFactory.XmlElement(
-                            SyntaxFactory.XmlElementStartTag(SyntaxFactory.XmlName("summary")),
-                            SyntaxFactory.List<XmlNodeSyntax>()
-                                .Add(
-                                    SyntaxFactory.XmlText().AddTextTokens(
-                                        SyntaxFactory.XmlTextNewLine(SyntaxFactory.TriviaList(), Environment.NewLine, Environment.NewLine, SyntaxFactory.TriviaList()),
-                                        SyntaxFactory.XmlTextLiteral(SyntaxFactory.TriviaList(), "This class provides extension methods for the ", "This class provides extension methods for the ", SyntaxFactory.TriviaList())
-                                            .WithLeadingTrivia(SyntaxFactory.DocumentationCommentExterior("/// "))))
-                                .Add(
-                                    SyntaxFactory.XmlEmptyElement(SyntaxFactory.XmlName("see")).AddAttributes(
-                                        SyntaxFactory.XmlCrefAttribute(
-                                            SyntaxFactory.XmlName("cref"),
-                                            SyntaxFactory.Token(SyntaxKind.DoubleQuoteToken),
-                                            SyntaxFactory.TypeCref(SyntaxFactory.ParseTypeName(declaringType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat))),
-                                            SyntaxFactory.Token(SyntaxKind.DoubleQuoteToken))
-                                            .WithLeadingTrivia(SyntaxFactory.Whitespace(" "))))
-                                .Add(
-                                    SyntaxFactory.XmlText().AddTextTokens(
-                                        SyntaxFactory.XmlTextLiteral(SyntaxFactory.TriviaList(), " class.", " class.", SyntaxFactory.TriviaList()),
-                                        SyntaxFactory.XmlTextNewLine(SyntaxFactory.TriviaList(), Environment.NewLine, Environment.NewLine, SyntaxFactory.TriviaList()))),
-                            SyntaxFactory.XmlElementEndTag(SyntaxFactory.XmlName("summary"))
-                                .WithLeadingTrivia(SyntaxFactory.DocumentationCommentExterior("/// "))),
-                        SyntaxFactory.XmlText().AddTextTokens(SyntaxFactory.XmlTextNewLine(SyntaxFactory.TriviaList(), Environment.NewLine, Environment.NewLine, SyntaxFactory.TriviaList())),
-                        SyntaxFactory.XmlEmptyElement(SyntaxFactory.XmlName("threadsafety"))
-                            .AddAttributes(
-                                SyntaxFactory.XmlTextAttribute(
-                                    SyntaxFactory.XmlName("static"),
-                                    SyntaxFactory.Token(SyntaxKind.DoubleQuoteToken),
-                                    SyntaxFactory.TokenList(SyntaxFactory.XmlTextLiteral(SyntaxFactory.TriviaList(), "true", "true", SyntaxFactory.TriviaList())),
-                                    SyntaxFactory.Token(SyntaxKind.DoubleQuoteToken))
-                                    .WithLeadingTrivia(SyntaxFactory.Whitespace(" ")),
-                                SyntaxFactory.XmlTextAttribute(
-                                    SyntaxFactory.XmlName("instance"),
-                                    SyntaxFactory.Token(SyntaxKind.DoubleQuoteToken),
-                                    SyntaxFactory.TokenList(SyntaxFactory.XmlTextLiteral(SyntaxFactory.TriviaList(), "false", "false", SyntaxFactory.TriviaList())),
-                                    SyntaxFactory.Token(SyntaxKind.DoubleQuoteToken))
-                                    .WithLeadingTrivia(SyntaxFactory.Whitespace(" ")))
-                            .WithLeadingTrivia(SyntaxFactory.DocumentationCommentExterior("/// ")),
-                        SyntaxFactory.XmlText().AddTextTokens(SyntaxFactory.XmlTextNewLine(SyntaxFactory.TriviaList(), Environment.NewLine, Environment.NewLine, SyntaxFactory.TriviaList())),
-                        SyntaxFactory.XmlEmptyElement(SyntaxFactory.XmlName("preliminary"))
-                            .WithLeadingTrivia(SyntaxFactory.DocumentationCommentExterior("/// ")))
-                    .WithLeadingTrivia(SyntaxFactory.DocumentationCommentExterior("/// "))
-                    .WithTrailingTrivia(SyntaxFactory.EndOfLine(Environment.NewLine));
+                DocumentationCommentTriviaSyntax documentationComment = XmlSyntaxFactory.DocumentationComment(
+                    XmlSyntaxFactory.MultiLineElement(
+                        "summary",
+                        XmlSyntaxFactory.List(
+                            XmlSyntaxFactory.Text("This class provides extension methods for the "),
+                            XmlSyntaxFactory.EmptyElement("see").AddAttributes(
+                                XmlSyntaxFactory.CrefAttribute(SyntaxFactory.TypeCref(SyntaxFactory.ParseTypeName(declaringType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat))))),
+                            XmlSyntaxFactory.Text(" class."))),
+                    XmlSyntaxFactory.NewLine(),
+                    XmlSyntaxFactory.EmptyElement("threadsafety")
+                        .AddAttributes(
+                            XmlSyntaxFactory.TextAttribute("static", "true"),
+                            XmlSyntaxFactory.TextAttribute("instance", "false")),
+                    XmlSyntaxFactory.NewLine(),
+                    XmlSyntaxFactory.EmptyElement("preliminary"));
 
                 SyntaxNode extensionsClassRoot = SyntaxFactory.CompilationUnit().AddMembers(
                     SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(declaringType.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)))

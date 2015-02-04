@@ -111,20 +111,15 @@
                 // Need to add a new class for the extension methods.
 
                 DocumentationCommentTriviaSyntax documentationComment = XmlSyntaxFactory.DocumentationComment(
-                    XmlSyntaxFactory.MultiLineElement(
-                        "summary",
-                        XmlSyntaxFactory.List(
-                            XmlSyntaxFactory.Text("This class provides extension methods for the "),
-                            XmlSyntaxFactory.EmptyElement("see").AddAttributes(
-                                XmlSyntaxFactory.CrefAttribute(SyntaxFactory.TypeCref(SyntaxFactory.ParseTypeName(declaringType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat))))),
-                            XmlSyntaxFactory.Text(" class."))),
+                    XmlSyntaxFactory.SummaryElement(
+                        XmlSyntaxFactory.Text("This class provides extension methods for the "),
+                        XmlSyntaxFactory.SeeElement(
+                            SyntaxFactory.TypeCref(SyntaxFactory.ParseTypeName(declaringType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)))),
+                        XmlSyntaxFactory.Text(" class.")),
                     XmlSyntaxFactory.NewLine(),
-                    XmlSyntaxFactory.EmptyElement("threadsafety")
-                        .AddAttributes(
-                            XmlSyntaxFactory.TextAttribute("static", "true"),
-                            XmlSyntaxFactory.TextAttribute("instance", "false")),
+                    XmlSyntaxFactory.ThreadSafetyElement(),
                     XmlSyntaxFactory.NewLine(),
-                    XmlSyntaxFactory.EmptyElement("preliminary"));
+                    XmlSyntaxFactory.PreliminaryElement());
 
                 SyntaxNode extensionsClassRoot = SyntaxFactory.CompilationUnit().AddMembers(
                     SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(declaringType.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)))

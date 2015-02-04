@@ -134,5 +134,77 @@
                 value,
                 SyntaxFactory.TriviaList());
         }
+
+        public static XmlElementSyntax SummaryElement(params XmlNodeSyntax[] content)
+        {
+            return SummaryElement(List(content));
+        }
+
+        public static XmlElementSyntax SummaryElement(SyntaxList<XmlNodeSyntax> content)
+        {
+            return MultiLineElement("summary", content);
+        }
+
+        public static XmlElementSyntax RemarksElement(params XmlNodeSyntax[] content)
+        {
+            return RemarksElement(List(content));
+        }
+
+        public static XmlElementSyntax RemarksElement(SyntaxList<XmlNodeSyntax> content)
+        {
+            return MultiLineElement("remarks", content);
+        }
+
+        public static XmlElementSyntax ReturnsElement(params XmlNodeSyntax[] content)
+        {
+            return ReturnsElement(List(content));
+        }
+
+        public static XmlElementSyntax ReturnsElement(SyntaxList<XmlNodeSyntax> content)
+        {
+            return MultiLineElement("returns", content);
+        }
+
+        public static XmlElementSyntax ValueElement(params XmlNodeSyntax[] content)
+        {
+            return ValueElement(List(content));
+        }
+
+        public static XmlElementSyntax ValueElement(SyntaxList<XmlNodeSyntax> content)
+        {
+            return MultiLineElement("value", content);
+        }
+
+        public static XmlElementSyntax ParaElement(params XmlNodeSyntax[] content)
+        {
+            return ParaElement(List(content));
+        }
+
+        public static XmlElementSyntax ParaElement(SyntaxList<XmlNodeSyntax> content)
+        {
+            return Element("para", content);
+        }
+
+        public static XmlEmptyElementSyntax SeeElement(CrefSyntax cref)
+        {
+            return EmptyElement("see").AddAttributes(CrefAttribute(cref));
+        }
+
+        public static XmlEmptyElementSyntax ThreadSafetyElement()
+        {
+            return ThreadSafetyElement(true, false);
+        }
+
+        public static XmlEmptyElementSyntax ThreadSafetyElement(bool @static, bool instance)
+        {
+            return EmptyElement("threadsafety").AddAttributes(
+                TextAttribute("static", @static.ToString().ToLowerInvariant()),
+                TextAttribute("instance", instance.ToString().ToLowerInvariant()));
+        }
+
+        public static XmlEmptyElementSyntax PreliminaryElement()
+        {
+            return EmptyElement("preliminary");
+        }
     }
 }

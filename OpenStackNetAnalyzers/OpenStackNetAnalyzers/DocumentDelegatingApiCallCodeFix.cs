@@ -120,14 +120,14 @@
                     XmlSyntaxFactory.Text(" class"),
                     XmlSyntaxFactory.NewLine(),
                     XmlSyntaxFactory.Text("with the behavior provided by another "),
-                    XmlSyntaxFactory.SeeElement(SyntaxFactory.TypeCref(SyntaxFactory.ParseTypeName("global::OpenStack.Net.IHttpApiCall{T}"))),
+                    XmlSyntaxFactory.SeeElement(SyntaxFactory.TypeCref(SyntaxFactory.ParseTypeName("global::OpenStack.Net.IHttpApiCall<T>"))),
                     XmlSyntaxFactory.Text(" instance.")),
                 XmlSyntaxFactory.NewLine(),
                 XmlSyntaxFactory.ParamElement(
                     parameterName,
                     XmlSyntaxFactory.List(
                         XmlSyntaxFactory.Text("The "),
-                        XmlSyntaxFactory.SeeElement(SyntaxFactory.TypeCref(SyntaxFactory.ParseTypeName("global::OpenStack.Net.IHttpApiCall{T}"))),
+                        XmlSyntaxFactory.SeeElement(SyntaxFactory.TypeCref(SyntaxFactory.ParseTypeName("global::OpenStack.Net.IHttpApiCall<T>"))),
                         XmlSyntaxFactory.Text(" providing the behavior for the API call."))),
                 XmlSyntaxFactory.NewLine(),
                 XmlSyntaxFactory.ExceptionElement(

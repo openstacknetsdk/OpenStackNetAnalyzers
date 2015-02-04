@@ -103,6 +103,7 @@
 
         public static XmlCrefAttributeSyntax CrefAttribute(CrefSyntax cref, SyntaxKind quoteKind)
         {
+            cref = cref.ReplaceTokens(cref.DescendantTokens(), ReplaceBracketTokens);
             return SyntaxFactory.XmlCrefAttribute(
                 SyntaxFactory.XmlName("cref"),
                 SyntaxFactory.Token(quoteKind),
@@ -274,6 +275,17 @@
         public static XmlEmptyElementSyntax PreliminaryElement()
         {
             return EmptyElement("preliminary");
+        }
+
+        private static SyntaxToken ReplaceBracketTokens(SyntaxToken originalToken, SyntaxToken rewrittenToken)
+        {
+            if (rewrittenToken.IsKind(SyntaxKind.LessThanToken) && string.Equals("<", rewrittenToken.Text, StringComparison.Ordinal))
+                return SyntaxFactory.Token(rewrittenToken.LeadingTrivia, SyntaxKind.LessThanToken, "{", rewrittenToken.ValueText, rewrittenToken.TrailingTrivia);
+
+            if (rewrittenToken.IsKind(SyntaxKind.GreaterThanToken) && string.Equals(">", rewrittenToken.Text, StringComparison.Ordinal))
+                return SyntaxFactory.Token(rewrittenToken.LeadingTrivia, SyntaxKind.GreaterThanToken, "}", rewrittenToken.ValueText, rewrittenToken.TrailingTrivia);
+
+            return rewrittenToken;
         }
     }
 }

@@ -99,13 +99,15 @@
                 }
 
                 if (newContent.Count > 0)
-                    newContent = newContent.Add(XmlSyntaxFactory.NewLine());
+                    newContent = newContent.Add(XmlSyntaxFactory.NewLine().WithTrailingTrivia(SyntaxFactory.DocumentationCommentExterior("///")));
 
                 newContent = newContent.Add(XmlSyntaxFactory.Text(line.TrimEnd(), true));
             }
 
-            contentsOnly = contentsOnly
-                .WithContent(newContent)
+            contentsOnly = contentsOnly.WithContent(newContent);
+            contentsOnly =
+                contentsOnly
+                .ReplaceExteriorTrivia(leadingTrivia)
                 .WithLeadingTrivia(SyntaxFactory.DocumentationCommentExterior("///"))
                 .WithTrailingTrivia(SyntaxFactory.EndOfLine(Environment.NewLine));
 
@@ -115,11 +117,6 @@
             contentsOnly = documentationTrivia.GetStructure() as DocumentationCommentTriviaSyntax;
             if (contentsOnly == null)
                 return context.Document;
-
-            contentsOnly =
-                contentsOnly
-                .ReplaceExteriorTrivia(leadingTrivia)
-                .WithLeadingTrivia(SyntaxFactory.DocumentationCommentExterior("///"));
 
             // Remove unnecessary nested paragraph elements
             contentsOnly = contentsOnly.ReplaceNodes(contentsOnly.DescendantNodes().OfType<XmlElementSyntax>(), RemoveNestedParagraphs);
@@ -193,8 +190,9 @@
             return elementSyntax.WithContent(
                 XmlSyntaxFactory.List(
                     XmlSyntaxFactory.NewLine().WithoutTrailingTrivia(),
-                    XmlSyntaxFactory.Text(rendered, true),
-                    XmlSyntaxFactory.NewLine().WithoutTrailingTrivia()));
+                    XmlSyntaxFactory.Text(" " + rendered.Replace("\n", "\n "), true),
+                    XmlSyntaxFactory.NewLine().WithoutTrailingTrivia(),
+                    XmlSyntaxFactory.Text(" ")));
         }
 
         private string RenderAsMarkdown(string text)

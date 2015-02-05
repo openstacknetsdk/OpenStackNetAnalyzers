@@ -123,6 +123,9 @@
 
             SyntaxNode root = await context.Document.GetSyntaxRootAsync(cancellationToken);
             SyntaxNode newRoot = root.ReplaceNode(documentationCommentTriviaSyntax, contentsOnly);
+            if (documentationCommentTriviaSyntax.IsEquivalentTo(contentsOnly))
+                return context.Document;
+
             return context.Document.WithSyntaxRoot(newRoot);
         }
 

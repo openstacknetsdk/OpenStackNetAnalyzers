@@ -121,12 +121,54 @@
                 .ReplaceExteriorTrivia(leadingTrivia)
                 .WithLeadingTrivia(SyntaxFactory.DocumentationCommentExterior("///"));
 
+            // Remove unnecessary nested paragraph elements
+            contentsOnly = contentsOnly.ReplaceNodes(contentsOnly.DescendantNodes().OfType<XmlElementSyntax>(), RemoveNestedParagraphs);
+
             SyntaxNode root = await context.Document.GetSyntaxRootAsync(cancellationToken);
             SyntaxNode newRoot = root.ReplaceNode(documentationCommentTriviaSyntax, contentsOnly);
             if (documentationCommentTriviaSyntax.IsEquivalentTo(contentsOnly))
                 return context.Document;
 
             return context.Document.WithSyntaxRoot(newRoot);
+        }
+
+        private SyntaxNode RemoveNestedParagraphs(SyntaxNode originalNode, SyntaxNode rewrittenNode)
+        {
+            XmlElementSyntax elementSyntax = rewrittenNode as XmlElementSyntax;
+            if (!IsUnnecessaryParaElement(elementSyntax))
+                return rewrittenNode;
+
+            return elementSyntax.Content[0].WithTriviaFrom(rewrittenNode);
+        }
+
+        private static bool IsUnnecessaryParaElement(XmlElementSyntax elementSyntax)
+        {
+            if (elementSyntax == null)
+                return false;
+
+            if (HasAttributes(elementSyntax))
+                return false;
+
+            if (!IsParaElement(elementSyntax))
+                return false;
+
+            if (elementSyntax.Content.Count != 1)
+                return false;
+
+            if (!IsParaElement(elementSyntax.Content[0] as XmlElementSyntax))
+                return false;
+
+            return true;
+        }
+
+        private static bool HasAttributes(XmlElementSyntax syntax)
+        {
+            return syntax.StartTag?.Attributes.Count > 0;
+        }
+
+        private static bool IsParaElement(XmlElementSyntax syntax)
+        {
+            return string.Equals("para", syntax?.StartTag?.Name?.ToString(), StringComparison.Ordinal);
         }
 
         private SyntaxNode RenderBlockElementAsMarkdown(SyntaxNode originalNode, SyntaxNode rewrittenNode)

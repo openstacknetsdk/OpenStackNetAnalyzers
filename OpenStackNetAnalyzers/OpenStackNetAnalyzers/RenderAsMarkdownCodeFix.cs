@@ -109,6 +109,13 @@
                 .WithLeadingTrivia(SyntaxFactory.DocumentationCommentExterior("///"))
                 .WithTrailingTrivia(SyntaxFactory.EndOfLine(Environment.NewLine));
 
+            string fullContent = contentsOnly.ToFullString();
+            SyntaxTriviaList parsedTrivia = SyntaxFactory.ParseLeadingTrivia(fullContent);
+            SyntaxTrivia documentationTrivia = parsedTrivia.FirstOrDefault(i => i.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia));
+            contentsOnly = documentationTrivia.GetStructure() as DocumentationCommentTriviaSyntax;
+            if (contentsOnly == null)
+                return context.Document;
+
             contentsOnly =
                 contentsOnly
                 .ReplaceExteriorTrivia(leadingTrivia)

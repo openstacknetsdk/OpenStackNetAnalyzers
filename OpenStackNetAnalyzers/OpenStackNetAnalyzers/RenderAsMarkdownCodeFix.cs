@@ -83,7 +83,7 @@
             SyntaxTrivia leadingTrivia = SyntaxFactory.DocumentationCommentExterior(leadingTriviaBuilder.ToString());
 
             DocumentationCommentTriviaSyntax contentsOnly = RemoveExteriorTrivia(documentationCommentTriviaSyntax);
-            contentsOnly = contentsOnly.ReplaceNodes(contentsOnly.DescendantNodes(), RenderBlockElementAsMarkdown);
+            contentsOnly = contentsOnly.ReplaceNodes(contentsOnly.ChildNodes(), RenderBlockElementAsMarkdown);
             string renderedContent = contentsOnly.Content.ToFullString();
             string[] lines = renderedContent.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
             SyntaxList<XmlNodeSyntax> newContent = XmlSyntaxFactory.List();

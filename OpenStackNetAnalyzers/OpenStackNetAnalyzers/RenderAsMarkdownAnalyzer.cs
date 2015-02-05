@@ -31,7 +31,23 @@
 
         public override void Initialize(AnalysisContext context)
         {
+            context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.ClassDeclaration);
+            context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.ConstructorDeclaration);
+            context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.ConversionOperatorDeclaration);
+            context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.DelegateDeclaration);
+            context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.DestructorDeclaration);
+            context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.EnumDeclaration);
+            context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.EnumMemberDeclaration);
+            context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.EventDeclaration);
+            context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.EventFieldDeclaration);
+            context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.FieldDeclaration);
+            context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.IndexerDeclaration);
+            context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.InterfaceDeclaration);
+            context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.MethodDeclaration);
+            context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.NamespaceDeclaration);
+            context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.OperatorDeclaration);
             context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.PropertyDeclaration);
+            context.RegisterSyntaxNodeAction(HandleDocumentedNode, SyntaxKind.StructDeclaration);
         }
 
         private void HandleDocumentedNode(SyntaxNodeAnalysisContext context)

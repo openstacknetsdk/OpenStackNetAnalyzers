@@ -42,7 +42,7 @@
             if (symbol.TypeKind != TypeKind.Class)
                 return;
 
-            if (!IsExtensibleJsonObject(context, symbol))
+            if (!IsExtensibleJsonObject(symbol))
                 return;
 
             foreach (var propertySymbol in symbol.GetMembers().OfType<IPropertySymbol>())
@@ -83,7 +83,7 @@
             }
         }
 
-        private bool IsExtensibleJsonObject(SymbolAnalysisContext context, INamedTypeSymbol symbol)
+        private bool IsExtensibleJsonObject(INamedTypeSymbol symbol)
         {
             while (symbol != null && symbol.SpecialType != SpecialType.System_Object)
             {

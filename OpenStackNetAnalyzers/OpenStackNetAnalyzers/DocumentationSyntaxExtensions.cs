@@ -50,8 +50,19 @@
             }
         }
 
+        public static DocumentationCommentTriviaSyntax ReplaceExteriorTrivia(this DocumentationCommentTriviaSyntax node, SyntaxTrivia trivia)
+        {
+            return node.ReplaceExteriorTriviaImpl(trivia);
+        }
+
         public static T ReplaceExteriorTrivia<T>(this T node, SyntaxTrivia trivia)
             where T : XmlNodeSyntax
+        {
+            return node.ReplaceExteriorTriviaImpl(trivia);
+        }
+
+        private static T ReplaceExteriorTriviaImpl<T>(this T node, SyntaxTrivia trivia)
+            where T : SyntaxNode
         {
             // Make sure to include a space after the '///' characters.
             SyntaxTrivia triviaWithSpace = SyntaxFactory.DocumentationCommentExterior(trivia.ToString() + " ");

@@ -53,7 +53,12 @@
 
         public static XmlTextSyntax Text(string value)
         {
-            return Text(TextLiteral(value));
+            return Text(value, false);
+        }
+
+        public static XmlTextSyntax Text(string value, bool raw)
+        {
+            return Text(TextLiteral(value, raw));
         }
 
         public static XmlTextSyntax Text(params SyntaxToken[] textTokens)
@@ -138,7 +143,17 @@
 
         public static SyntaxToken TextLiteral(string value)
         {
-            string encoded = new XText(value).ToString();
+            return TextLiteral(value, false);
+        }
+
+        public static SyntaxToken TextLiteral(string value, bool raw)
+        {
+            string encoded;
+            if (raw)
+                encoded = value;
+            else
+                encoded = new XText(value).ToString();
+
             return SyntaxFactory.XmlTextLiteral(
                 SyntaxFactory.TriviaList(),
                 encoded,

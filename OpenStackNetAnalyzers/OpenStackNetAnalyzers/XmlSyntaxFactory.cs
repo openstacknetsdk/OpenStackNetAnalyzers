@@ -277,6 +277,11 @@
             return EmptyElement("preliminary");
         }
 
+        public static XmlElementSyntax TokenElement(string value)
+        {
+            return Element("token", List(Text(value)));
+        }
+
         private static SyntaxToken ReplaceBracketTokens(SyntaxToken originalToken, SyntaxToken rewrittenToken)
         {
             if (rewrittenToken.IsKind(SyntaxKind.LessThanToken) && string.Equals("<", rewrittenToken.Text, StringComparison.Ordinal))

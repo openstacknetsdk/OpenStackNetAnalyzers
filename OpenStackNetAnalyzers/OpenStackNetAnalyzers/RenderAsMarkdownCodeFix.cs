@@ -130,6 +130,9 @@
             if (documentationCommentTriviaSyntax.IsEquivalentTo(contentsOnly))
                 return context.Document;
 
+            if (documentationCommentTriviaSyntax.ToFullString().Equals(contentsOnly.ToFullString(), StringComparison.Ordinal))
+                return context.Document;
+
             return context.Document.WithSyntaxRoot(newRoot);
         }
 

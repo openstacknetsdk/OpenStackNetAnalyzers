@@ -54,7 +54,7 @@
             if (!declaringType.IsExtensibleJsonObject())
                 return;
 
-            DocumentationCommentTriviaSyntax documentationTriviaSyntax = GetDocumentationCommentTriviaSyntax(syntax);
+            DocumentationCommentTriviaSyntax documentationTriviaSyntax = syntax.GetDocumentationCommentTriviaSyntax();
             if (documentationTriviaSyntax == null)
                 return;
 
@@ -63,18 +63,6 @@
                 return;
 
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, syntax.Identifier.GetLocation()));
-        }
-
-        internal static DocumentationCommentTriviaSyntax GetDocumentationCommentTriviaSyntax(SyntaxNode node)
-        {
-            if (node == null)
-                return null;
-
-            return node
-                .GetLeadingTrivia()
-                .Select(i => i.GetStructure())
-                .OfType<DocumentationCommentTriviaSyntax>()
-                .FirstOrDefault();
         }
 
         internal static XmlNodeSyntax GetXmlElement(SyntaxList<XmlNodeSyntax> content, string elementName)

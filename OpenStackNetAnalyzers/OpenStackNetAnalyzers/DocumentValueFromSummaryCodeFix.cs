@@ -52,7 +52,7 @@
 
         private async Task<Document> CreateChangedDocument(CodeFixContext context, PropertyDeclarationSyntax propertyDeclarationSyntax, CancellationToken cancellationToken)
         {
-            DocumentationCommentTriviaSyntax documentationComment = DocumentValueFromSummaryAnalyzer.GetDocumentationCommentTriviaSyntax(propertyDeclarationSyntax);
+            DocumentationCommentTriviaSyntax documentationComment = propertyDeclarationSyntax.GetDocumentationCommentTriviaSyntax();
             if (documentationComment == null)
                 return context.Document;
 

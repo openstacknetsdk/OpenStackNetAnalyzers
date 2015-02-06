@@ -33,6 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssertNullAnalyzer.cs" />
+    <Compile Include="DocumentationSyntaxExtensions.cs" />
     <Compile Include="DocumentDelegatingApiCallAnalyzer.cs" />
     <Compile Include="DocumentDelegatingApiCallCodeFix.cs" />
     <Compile Include="DocumentValueFromSummaryAnalyzer.cs" />

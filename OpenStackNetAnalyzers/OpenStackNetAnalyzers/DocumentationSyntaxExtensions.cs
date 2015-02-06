@@ -172,14 +172,28 @@
                     string trimmed = firstTokenText.TrimStart();
                     if (trimmed != firstTokenText)
                     {
-                        SyntaxToken newFirstToken = SyntaxFactory.Token(
-                            firstTextToken.LeadingTrivia,
-                            firstTextToken.CSharpKind(),
-                            trimmed,
-                            firstTextToken.ValueText.TrimStart(),
-                            firstTextToken.TrailingTrivia);
+                        if (trimmed.Length == 0)
+                        {
+                            if (firstTextSyntax.TextTokens.Count == 1)
+                            {
+                                summaryContent = summaryContent.Remove(firstTextSyntax);
+                            }
+                            else
+                            {
+                                summaryContent = summaryContent.Replace(firstTextSyntax, firstTextSyntax.WithTextTokens(firstTextSyntax.TextTokens.RemoveAt(0)));
+                            }
+                        }
+                        else
+                        {
+                            SyntaxToken newFirstToken = SyntaxFactory.Token(
+                                firstTextToken.LeadingTrivia,
+                                firstTextToken.CSharpKind(),
+                                trimmed,
+                                firstTextToken.ValueText.TrimStart(),
+                                firstTextToken.TrailingTrivia);
 
-                        summaryContent = summaryContent.Replace(firstTextSyntax, firstTextSyntax.ReplaceToken(firstTextToken, newFirstToken));
+                            summaryContent = summaryContent.Replace(firstTextSyntax, firstTextSyntax.ReplaceToken(firstTextToken, newFirstToken));
+                        }
                     }
                 }
             }

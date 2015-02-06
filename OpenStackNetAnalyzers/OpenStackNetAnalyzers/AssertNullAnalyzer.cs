@@ -64,27 +64,10 @@
                 return;
 
             TypeInfo typeInfo = context.SemanticModel.GetTypeInfo(argumentExpression);
-            INamedTypeSymbol namedType = typeInfo.Type as INamedTypeSymbol;
-            if (namedType == null)
+            if (!typeInfo.Type.IsNonNullableValueType())
                 return;
 
-            if (!namedType.IsValueType)
-            {
-                // don't report the diagnostic for reference types
-                return;
-            }
-
-            INamedTypeSymbol originalDefinition = namedType.OriginalDefinition;
-            if (originalDefinition == null
-                || originalDefinition.SpecialType == SpecialType.System_Nullable_T
-                || originalDefinition.SpecialType == SpecialType.System_ValueType
-                || originalDefinition.SpecialType == SpecialType.System_Enum)
-            {
-                // don't report the diagnostic for "special" and nullable value types
-                return;
-            }
-
-            string typeName = namedType.ToMinimalDisplayString(context.SemanticModel, argumentExpression.SpanStart, SymbolDisplayFormat.CSharpErrorMessageFormat);
+            string typeName = typeInfo.Type.ToMinimalDisplayString(context.SemanticModel, argumentExpression.SpanStart, SymbolDisplayFormat.CSharpErrorMessageFormat);
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, syntax.GetLocation(), methodSymbol.Name, typeName));
         }
     }

@@ -42,7 +42,7 @@
             if (symbol.TypeKind != TypeKind.Class)
                 return;
 
-            if (!IsExtensibleJsonObject(symbol))
+            if (!symbol.IsExtensibleJsonObject())
                 return;
 
             foreach (var propertySymbol in symbol.GetMembers().OfType<IPropertySymbol>())
@@ -81,19 +81,6 @@
                     context.ReportDiagnostic(Diagnostic.Create(Descriptor, locations.FirstOrDefault(), locations.Skip(1)));
                 }
             }
-        }
-
-        private bool IsExtensibleJsonObject(INamedTypeSymbol symbol)
-        {
-            while (symbol != null && symbol.SpecialType != SpecialType.System_Object)
-            {
-                if (string.Equals("global::OpenStack.ObjectModel.ExtensibleJsonObject", symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), StringComparison.Ordinal))
-                    return true;
-
-                symbol = symbol.BaseType;
-            }
-
-            return false;
         }
     }
 }

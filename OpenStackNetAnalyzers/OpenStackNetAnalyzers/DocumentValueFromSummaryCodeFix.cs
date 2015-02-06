@@ -52,11 +52,11 @@
 
         private async Task<Document> CreateChangedDocument(CodeFixContext context, PropertyDeclarationSyntax propertyDeclarationSyntax, CancellationToken cancellationToken)
         {
-            DocumentationCommentTriviaSyntax documentationComment = DocumentValueFromSummaryAnalyzer.GetDocumentationCommentTriviaSyntax(propertyDeclarationSyntax);
+            DocumentationCommentTriviaSyntax documentationComment = propertyDeclarationSyntax.GetDocumentationCommentTriviaSyntax();
             if (documentationComment == null)
                 return context.Document;
 
-            XmlElementSyntax summaryElement = (XmlElementSyntax)DocumentValueFromSummaryAnalyzer.GetXmlElement(documentationComment.Content, "summary");
+            XmlElementSyntax summaryElement = (XmlElementSyntax)documentationComment.Content.GetFirstXmlElement("summary");
             if (summaryElement == null)
                 return context.Document;
 
@@ -111,7 +111,7 @@
             if (propertySymbol != null)
             {
                 ITypeSymbol propertyType = propertySymbol.Type;
-                if (string.Equals("ImmutableArray`1", propertyType?.MetadataName, StringComparison.Ordinal))
+                if (propertyType.IsImmutableArray())
                     defaultValueToken = "DefaultArrayIfNotIncluded";
             }
 
@@ -119,7 +119,7 @@
                 XmlSyntaxFactory.MultiLineElement(
                     "value",
                     XmlSyntaxFactory.List(
-                        XmlSyntaxFactory.ParaElement(XmlSyntaxFactory.PlaceholderElement(RemoveFirstAndListNewlines(summaryContent))),
+                        XmlSyntaxFactory.ParaElement(XmlSyntaxFactory.PlaceholderElement(summaryContent.WithoutFirstAndLastNewlines())),
                         XmlSyntaxFactory.NewLine(),
                         XmlSyntaxFactory.TokenElement(defaultValueToken)));
 
@@ -131,8 +131,8 @@
             SyntaxTrivia exteriorTrivia = GetLastDocumentationCommentExteriorTrivia(documentationComment);
             if (!exteriorTrivia.Token.IsMissing)
             {
-                leadingNewLine = ReplaceExteriorTrivia(leadingNewLine, exteriorTrivia);
-                valueElement = ReplaceExteriorTrivia(valueElement, exteriorTrivia);
+                leadingNewLine = leadingNewLine.ReplaceExteriorTrivia(exteriorTrivia);
+                valueElement = valueElement.ReplaceExteriorTrivia(exteriorTrivia);
             }
 
             DocumentationCommentTriviaSyntax newDocumentationComment = documentationComment.WithContent(
@@ -167,143 +167,6 @@
                 .DescendantTrivia(descendIntoTrivia: true)
                 .Where(trivia => trivia.IsKind(SyntaxKind.DocumentationCommentExteriorTrivia))
                 .LastOrDefault();
-        }
-
-        private T ReplaceExteriorTrivia<T>(T node, SyntaxTrivia trivia)
-            where T : SyntaxNode
-        {
-            // Make sure to include a space after the '///' characters.
-            SyntaxTrivia triviaWithSpace = SyntaxFactory.DocumentationCommentExterior(trivia.ToString() + " ");
-
-            return node.ReplaceTrivia(
-                node.DescendantTrivia(descendIntoTrivia: true).Where(i => i.IsKind(SyntaxKind.DocumentationCommentExteriorTrivia)),
-                (originalTrivia, rewrittenTrivia) => SelectExteriorTrivia(rewrittenTrivia, trivia, triviaWithSpace));
-        }
-
-        private SyntaxTrivia SelectExteriorTrivia(SyntaxTrivia rewrittenTrivia, SyntaxTrivia trivia, SyntaxTrivia triviaWithSpace)
-        {
-            // if the trivia had a trailing space, make sure to preserve it
-            if (rewrittenTrivia.ToString().EndsWith(" "))
-                return triviaWithSpace;
-
-            // otherwise the space is part of the leading trivia of the following token, so don't add an extra one to
-            // the exterior trivia
-            return trivia;
-        }
-
-        private SyntaxList<XmlNodeSyntax> RemoveFirstAndListNewlines(SyntaxList<XmlNodeSyntax> summaryContent)
-        {
-            if (summaryContent.Count == 0)
-                return summaryContent;
-
-            XmlTextSyntax firstSyntax = summaryContent[0] as XmlTextSyntax;
-            if (firstSyntax == null)
-                return summaryContent;
-
-            XmlTextSyntax lastSyntax = summaryContent[summaryContent.Count - 1] as XmlTextSyntax;
-            if (lastSyntax == null)
-                return summaryContent;
-
-            SyntaxTokenList firstSyntaxTokens = firstSyntax.TextTokens;
-
-            int removeFromStart;
-            if (IsNewLine(firstSyntaxTokens[0]))
-            {
-                removeFromStart = 1;
-            }
-            else
-            {
-                if (!IsWhitespace(firstSyntaxTokens[0]))
-                    return summaryContent;
-
-                if (!IsNewLine(firstSyntaxTokens[1]))
-                    return summaryContent;
-
-                removeFromStart = 2;
-            }
-
-            SyntaxTokenList lastSyntaxTokens = lastSyntax.TextTokens;
-
-            int removeFromEnd;
-            if (IsNewLine(lastSyntaxTokens[lastSyntaxTokens.Count - 1]))
-            {
-                removeFromEnd = 1;
-            }
-            else
-            {
-                if (!IsWhitespace(lastSyntaxTokens[lastSyntaxTokens.Count - 1]))
-                    return summaryContent;
-
-                if (!IsNewLine(lastSyntaxTokens[lastSyntaxTokens.Count - 2]))
-                    return summaryContent;
-
-                removeFromEnd = 2;
-            }
-
-            for (int i = 0; i < removeFromStart; i++)
-            {
-                firstSyntaxTokens = firstSyntaxTokens.RemoveAt(0);
-            }
-
-            if (firstSyntax == lastSyntax)
-            {
-                lastSyntaxTokens = firstSyntaxTokens;
-            }
-
-            for (int i = 0; i < removeFromEnd; i++)
-            {
-                lastSyntaxTokens = lastSyntaxTokens.RemoveAt(lastSyntaxTokens.Count - 1);
-            }
-
-            summaryContent = summaryContent.RemoveAt(summaryContent.Count - 1);
-            if (lastSyntaxTokens.Count != 0)
-                summaryContent = summaryContent.Add(lastSyntax.WithTextTokens(lastSyntaxTokens));
-
-            if (firstSyntax != lastSyntax)
-            {
-                summaryContent = summaryContent.RemoveAt(0);
-                if (firstSyntaxTokens.Count != 0)
-                    summaryContent = summaryContent.Insert(0, firstSyntax.WithTextTokens(firstSyntaxTokens));
-            }
-
-            if (summaryContent.Count > 0)
-            {
-                // Make sure to remove the leading trivia
-                summaryContent = summaryContent.Replace(summaryContent[0], summaryContent[0].WithLeadingTrivia());
-
-                // Remove leading spaces (between the <para> start tag and the start of the paragraph content)
-                XmlTextSyntax firstTextSyntax = summaryContent[0] as XmlTextSyntax;
-                if (firstTextSyntax != null && firstTextSyntax.TextTokens.Count > 0)
-                {
-                    SyntaxToken firstTextToken = firstTextSyntax.TextTokens[0];
-                    string firstTokenText = firstTextToken.Text;
-                    string trimmed = firstTokenText.TrimStart();
-                    if (trimmed != firstTokenText)
-                    {
-                        SyntaxToken newFirstToken = SyntaxFactory.Token(
-                            firstTextToken.LeadingTrivia,
-                            firstTextToken.CSharpKind(),
-                            trimmed,
-                            firstTextToken.ValueText.TrimStart(),
-                            firstTextToken.TrailingTrivia);
-
-                        summaryContent = summaryContent.Replace(firstTextSyntax, firstTextSyntax.ReplaceToken(firstTextToken, newFirstToken));
-                    }
-                }
-            }
-
-            return summaryContent;
-        }
-
-        private bool IsNewLine(SyntaxToken node)
-        {
-            return node.IsKind(SyntaxKind.XmlTextLiteralNewLineToken);
-        }
-
-        private bool IsWhitespace(SyntaxToken node)
-        {
-            return node.IsKind(SyntaxKind.XmlTextLiteralToken)
-                && string.IsNullOrWhiteSpace(node.Text);
         }
     }
 }

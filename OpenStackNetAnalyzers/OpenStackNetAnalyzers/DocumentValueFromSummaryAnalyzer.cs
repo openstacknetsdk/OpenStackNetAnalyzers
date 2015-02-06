@@ -51,69 +51,17 @@
                 return;
 
             INamedTypeSymbol declaringType = propertySymbol.ContainingType;
-            if (!IsExtensibleJsonObject(declaringType))
+            if (!declaringType.IsExtensibleJsonObject())
                 return;
 
-            DocumentationCommentTriviaSyntax documentationTriviaSyntax = GetDocumentationCommentTriviaSyntax(syntax);
+            DocumentationCommentTriviaSyntax documentationTriviaSyntax = syntax.GetDocumentationCommentTriviaSyntax();
             if (documentationTriviaSyntax == null)
                 return;
 
-            XmlNodeSyntax valueNode = GetXmlElement(documentationTriviaSyntax.Content, "value");
-            if (valueNode != null)
+            if (documentationTriviaSyntax.Content.GetXmlElements("value").Any())
                 return;
 
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, syntax.Identifier.GetLocation()));
-        }
-
-        private bool IsExtensibleJsonObject(INamedTypeSymbol symbol)
-        {
-            while (symbol != null && symbol.SpecialType != SpecialType.System_Object)
-            {
-                if (string.Equals("global::OpenStack.ObjectModel.ExtensibleJsonObject", symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), StringComparison.Ordinal))
-                    return true;
-
-                symbol = symbol.BaseType;
-            }
-
-            return false;
-        }
-
-        internal static DocumentationCommentTriviaSyntax GetDocumentationCommentTriviaSyntax(SyntaxNode node)
-        {
-            if (node == null)
-                return null;
-
-            return node
-                .GetLeadingTrivia()
-                .Select(i => i.GetStructure())
-                .OfType<DocumentationCommentTriviaSyntax>()
-                .FirstOrDefault();
-        }
-
-        internal static XmlNodeSyntax GetXmlElement(SyntaxList<XmlNodeSyntax> content, string elementName)
-        {
-            foreach (XmlNodeSyntax syntax in content)
-            {
-                XmlEmptyElementSyntax emptyElement = syntax as XmlEmptyElementSyntax;
-                if (emptyElement != null)
-                {
-                    if (string.Equals(elementName, emptyElement.Name.ToString(), StringComparison.Ordinal))
-                        return emptyElement;
-
-                    continue;
-                }
-
-                XmlElementSyntax elementSyntax = syntax as XmlElementSyntax;
-                if (elementSyntax != null)
-                {
-                    if (string.Equals(elementName, elementSyntax.StartTag?.Name?.ToString(), StringComparison.Ordinal))
-                        return elementSyntax;
-
-                    continue;
-                }
-            }
-
-            return null;
         }
     }
 }

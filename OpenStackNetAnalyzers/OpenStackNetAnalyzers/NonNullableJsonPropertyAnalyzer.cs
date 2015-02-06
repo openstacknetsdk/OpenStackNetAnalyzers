@@ -56,14 +56,14 @@
 
         private void AnalyzeSymbol(SymbolAnalysisContext context, ISymbol symbol, ITypeSymbol type)
         {
-            if (string.Equals("ImmutableArray`1", type.MetadataName))
+            if (!type.IsNonNullableValueType())
+                return;
+
+            if (type.IsImmutableArray())
             {
                 // special-case this value type
                 return;
             }
-
-            if (!IsNonNullableValueType(type))
-                return;
 
             AttributeData jsonPropertyAttribute = GetJsonPropertyAttributeData(symbol.GetAttributes());
             if (jsonPropertyAttribute == null)
@@ -71,28 +71,6 @@
 
             ImmutableArray<Location> locations = symbol.Locations;
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, locations.FirstOrDefault(), additionalLocations: locations.Skip(1)));
-        }
-
-        private bool IsNonNullableValueType(ITypeSymbol type)
-        {
-            if (type == null)
-                return false;
-
-            if (!type.IsValueType)
-                return false;
-
-            ITypeSymbol originalDefinition = type.OriginalDefinition;
-            if (originalDefinition == null)
-                return false;
-
-            if (originalDefinition.SpecialType == SpecialType.System_Nullable_T
-                || originalDefinition.SpecialType == SpecialType.System_Enum
-                || originalDefinition.SpecialType == SpecialType.System_ValueType)
-            {
-                return false;
-            }
-
-            return true;
         }
 
         private AttributeData GetJsonPropertyAttributeData(ImmutableArray<AttributeData> attributes)

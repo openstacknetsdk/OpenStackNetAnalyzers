@@ -1,6 +1,5 @@
 ﻿namespace OpenStackNetAnalyzers
 {
-    using System;
     using System.Collections.Immutable;
     using System.Linq;
     using Microsoft.CodeAnalysis;
@@ -40,7 +39,7 @@
             if (symbol.TypeKind != TypeKind.Class)
                 return;
 
-            if (!IsDelegatingHttpApiCall(context, symbol))
+            if (!symbol.IsDelegatingHttpApiCall())
                 return;
 
             if (!string.IsNullOrEmpty(symbol.GetDocumentationCommentXml(cancellationToken: context.CancellationToken)))
@@ -48,24 +47,6 @@
 
             var locations = symbol.Locations;
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, locations.FirstOrDefault(), locations.Skip(1)));
-        }
-
-        private bool IsDelegatingHttpApiCall(SymbolAnalysisContext context, INamedTypeSymbol symbol)
-        {
-            while (symbol != null && symbol.SpecialType != SpecialType.System_Object)
-            {
-                if (symbol.IsGenericType)
-                {
-                    var originalDefinition = symbol.OriginalDefinition;
-                    string fullyQualifiedName = originalDefinition.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-                    if (string.Equals("global::OpenStack.Net.DelegatingHttpApiCall<T>", fullyQualifiedName, StringComparison.Ordinal))
-                        return true;
-                }
-
-                symbol = symbol.BaseType;
-            }
-
-            return false;
         }
     }
 }

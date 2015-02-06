@@ -9,6 +9,8 @@
 
         private const string FullyQualifiedTask = "global::System.Threading.Tasks.Task";
 
+        private const string FullyQualifiedCancellationToken = "global::System.Threading.CancellationToken";
+
         public static bool IsNonNullableValueType(this ITypeSymbol type)
         {
             if (type == null)
@@ -50,20 +52,33 @@
             return string.Equals(FullyQualifiedImmutableArrayT, originalDefinition.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), StringComparison.Ordinal);
         }
 
-        public static bool IsTask(this INamedTypeSymbol symbol)
+        public static bool IsTask(this ITypeSymbol symbol)
         {
-            while (symbol != null && symbol.SpecialType != SpecialType.System_Object)
+            INamedTypeSymbol namedSymbol = symbol as INamedTypeSymbol;
+            while (namedSymbol != null && namedSymbol.SpecialType != SpecialType.System_Object)
             {
-                if (!symbol.IsGenericType)
+                if (!namedSymbol.IsGenericType)
                 {
-                    if (string.Equals(FullyQualifiedTask, symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), StringComparison.Ordinal))
+                    if (string.Equals(FullyQualifiedTask, namedSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), StringComparison.Ordinal))
                         return true;
                 }
 
-                symbol = symbol.BaseType;
+                namedSymbol = namedSymbol.BaseType;
             }
 
             return false;
+        }
+
+        public static bool IsCancellationToken(this ITypeSymbol symbol)
+        {
+            INamedTypeSymbol namedSymbol = symbol as INamedTypeSymbol;
+            if (namedSymbol == null)
+                return false;
+
+            if (namedSymbol.TypeKind != TypeKind.Struct)
+                return false;
+
+            return string.Equals(FullyQualifiedCancellationToken, namedSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), StringComparison.Ordinal);
         }
     }
 }

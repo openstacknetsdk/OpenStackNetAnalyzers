@@ -51,7 +51,7 @@
                 return;
 
             INamedTypeSymbol declaringType = propertySymbol.ContainingType;
-            if (!IsExtensibleJsonObject(declaringType))
+            if (!declaringType.IsExtensibleJsonObject())
                 return;
 
             DocumentationCommentTriviaSyntax documentationTriviaSyntax = GetDocumentationCommentTriviaSyntax(syntax);
@@ -63,19 +63,6 @@
                 return;
 
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, syntax.Identifier.GetLocation()));
-        }
-
-        private bool IsExtensibleJsonObject(INamedTypeSymbol symbol)
-        {
-            while (symbol != null && symbol.SpecialType != SpecialType.System_Object)
-            {
-                if (string.Equals("global::OpenStack.ObjectModel.ExtensibleJsonObject", symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), StringComparison.Ordinal))
-                    return true;
-
-                symbol = symbol.BaseType;
-            }
-
-            return false;
         }
 
         internal static DocumentationCommentTriviaSyntax GetDocumentationCommentTriviaSyntax(SyntaxNode node)

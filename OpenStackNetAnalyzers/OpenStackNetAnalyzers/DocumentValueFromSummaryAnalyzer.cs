@@ -58,37 +58,10 @@
             if (documentationTriviaSyntax == null)
                 return;
 
-            XmlNodeSyntax valueNode = GetXmlElement(documentationTriviaSyntax.Content, "value");
-            if (valueNode != null)
+            if (documentationTriviaSyntax.Content.GetXmlElements("value").Any())
                 return;
 
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, syntax.Identifier.GetLocation()));
-        }
-
-        internal static XmlNodeSyntax GetXmlElement(SyntaxList<XmlNodeSyntax> content, string elementName)
-        {
-            foreach (XmlNodeSyntax syntax in content)
-            {
-                XmlEmptyElementSyntax emptyElement = syntax as XmlEmptyElementSyntax;
-                if (emptyElement != null)
-                {
-                    if (string.Equals(elementName, emptyElement.Name.ToString(), StringComparison.Ordinal))
-                        return emptyElement;
-
-                    continue;
-                }
-
-                XmlElementSyntax elementSyntax = syntax as XmlElementSyntax;
-                if (elementSyntax != null)
-                {
-                    if (string.Equals(elementName, elementSyntax.StartTag?.Name?.ToString(), StringComparison.Ordinal))
-                        return elementSyntax;
-
-                    continue;
-                }
-            }
-
-            return null;
         }
     }
 }

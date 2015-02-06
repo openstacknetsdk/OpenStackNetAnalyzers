@@ -56,7 +56,7 @@
             if (documentationComment == null)
                 return context.Document;
 
-            XmlElementSyntax summaryElement = (XmlElementSyntax)DocumentValueFromSummaryAnalyzer.GetXmlElement(documentationComment.Content, "summary");
+            XmlElementSyntax summaryElement = (XmlElementSyntax)documentationComment.Content.GetFirstXmlElement("summary");
             if (summaryElement == null)
                 return context.Document;
 

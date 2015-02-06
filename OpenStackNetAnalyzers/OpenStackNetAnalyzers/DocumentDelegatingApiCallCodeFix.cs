@@ -252,23 +252,5 @@
 
             return null;
         }
-
-        private bool IsServiceInterface(SemanticModel semanticModel, INamedTypeSymbol symbol)
-        {
-            while (symbol != null && symbol.SpecialType != SpecialType.System_Object)
-            {
-                if (symbol.IsGenericType)
-                {
-                    var originalDefinition = symbol.OriginalDefinition;
-                    string fullyQualifiedName = originalDefinition.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-                    if (string.Equals("global::OpenStack.Net.DelegatingHttpApiCall<T>", fullyQualifiedName, StringComparison.Ordinal))
-                        return true;
-                }
-
-                symbol = symbol.BaseType;
-            }
-
-            return false;
-        }
     }
 }

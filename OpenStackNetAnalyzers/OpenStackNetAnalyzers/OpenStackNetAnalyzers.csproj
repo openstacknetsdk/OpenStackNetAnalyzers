@@ -31,6 +31,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile Condition="'$(KeyConfiguration)' == 'Final'">..\..\build\keys\OpenStackNetAnalyzers.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile Condition="'$(KeyConfiguration)' != 'Final'">..\..\build\keys\OpenStackNetAnalyzers.dev.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssertNullAnalyzer.cs" />
     <Compile Include="CancellationTokenAnalyzer.cs" />
@@ -58,7 +65,13 @@
     <Compile Include="XmlSyntaxFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Diagnostic.nuspec">
+    <None Include="..\..\build\keys\OpenStackNetAnalyzers.dev.snk">
+      <Link>OpenStackNetAnalyzers.dev.snk</Link>
+    </None>
+    <None Include="..\..\build\keys\OpenStackNetAnalyzers.snk">
+      <Link>OpenStackNetAnalyzers.snk</Link>
+    </None>
+    <None Include="OpenStackNetAnalyzers.nuspec">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -118,10 +131,6 @@
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\v4.5\Microsoft.Portable.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>"$(SolutionDir)\packages\NuGet.CommandLine.2.8.2\tools\NuGet.exe" pack Diagnostic.nuspec -NoPackageAnalysis -OutputDirectory .</PostBuildEvent>
-    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

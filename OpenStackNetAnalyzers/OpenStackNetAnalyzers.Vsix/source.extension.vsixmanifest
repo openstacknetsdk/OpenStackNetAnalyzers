@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="OpenStackNetAnalyzers.Vsix.Rackspace.73d17a57-e1bb-4cf5-97c1-7a599f3ddfb5" Version="1.0" Language="en-US" Publisher="Rackspace"/>
+    <Identity Id="OpenStackNetAnalyzers.Vsix.Rackspace.73d17a57-e1bb-4cf5-97c1-7a599f3ddfb5" Version="1.0.0.0" Language="en-US" Publisher="Rackspace"/>
     <DisplayName>OpenStack.NET Analyzers</DisplayName>
     <Description xml:space="preserve">Roslyn-based analysis and coding assistance for the OpenStack.NET SDK.</Description>
   </Metadata>

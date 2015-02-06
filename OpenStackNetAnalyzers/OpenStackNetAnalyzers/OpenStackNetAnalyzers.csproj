@@ -49,6 +49,7 @@
     <Compile Include="PlaceholderDocumentationCodeFix.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SdkTypeSymbolExtensions.cs" />
+    <Compile Include="ServiceMethodPrepareAsyncAnalyzer.cs" />
     <Compile Include="SpacingExtensions.cs" />
     <Compile Include="TypeSymbolExtensions.cs" />
     <Compile Include="XmlSyntaxFactory.cs" />

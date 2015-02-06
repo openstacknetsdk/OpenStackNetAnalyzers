@@ -36,6 +36,7 @@
     <Compile Include="DocumentationSyntaxExtensions.cs" />
     <Compile Include="DocumentDelegatingApiCallAnalyzer.cs" />
     <Compile Include="DocumentDelegatingApiCallCodeFix.cs" />
+    <Compile Include="DocumentNullJsonValueAnalyzer.cs" />
     <Compile Include="DocumentValueFromSummaryAnalyzer.cs" />
     <Compile Include="DocumentValueFromSummaryCodeFix.cs" />
     <Compile Include="ImplementBuilderPatternAnalyzer.cs" />

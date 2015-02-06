@@ -177,13 +177,28 @@
             if (!IsParaElement(elementSyntax))
                 return false;
 
-            if (elementSyntax.Content.Count != 1)
-                return false;
-
-            if (!IsParaElement(elementSyntax.Content[0] as XmlElementSyntax))
+            if (HasLooseContent(elementSyntax.Content))
                 return false;
 
             return true;
+        }
+
+        private static bool HasLooseContent(SyntaxList<XmlNodeSyntax> content)
+        {
+            foreach (XmlNodeSyntax node in content)
+            {
+                XmlTextSyntax textSyntax = node as XmlTextSyntax;
+                if (textSyntax != null)
+                {
+                    if (textSyntax.TextTokens.Any(token => !string.IsNullOrWhiteSpace(token.ValueText)))
+                        return true;
+                }
+
+                if (node is XmlCDataSectionSyntax)
+                    return true;
+            }
+
+            return false;
         }
 
         private static bool HasAttributes(XmlElementSyntax syntax)

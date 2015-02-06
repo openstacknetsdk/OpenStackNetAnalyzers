@@ -9,6 +9,8 @@
 
         private const string FullyQualifiedDelegatingHttpApiCallT = "global::OpenStack.Net.DelegatingHttpApiCall<T>";
 
+        private const string FullyQualifiedIHttpService = "global::OpenStack.Services.IHttpService";
+
         public static bool IsExtensibleJsonObject(this INamedTypeSymbol symbol)
         {
             while (symbol != null && symbol.SpecialType != SpecialType.System_Object)
@@ -35,6 +37,20 @@
                 }
 
                 symbol = symbol.BaseType;
+            }
+
+            return false;
+        }
+
+        public static bool IsHttpServiceInterface(this INamedTypeSymbol symbol)
+        {
+            if (symbol == null || symbol.TypeKind != TypeKind.Interface)
+                return false;
+
+            foreach (INamedTypeSymbol interfaceType in symbol.AllInterfaces)
+            {
+                if (string.Equals(FullyQualifiedIHttpService, interfaceType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)))
+                    return true;
             }
 
             return false;

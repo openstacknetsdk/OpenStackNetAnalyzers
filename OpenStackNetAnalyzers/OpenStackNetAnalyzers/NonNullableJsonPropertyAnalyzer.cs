@@ -56,7 +56,7 @@
 
         private void AnalyzeSymbol(SymbolAnalysisContext context, ISymbol symbol, ITypeSymbol type)
         {
-            if (string.Equals("ImmutableArray`1", type.MetadataName))
+            if (type.IsImmutableArray())
             {
                 // special-case this value type
                 return;

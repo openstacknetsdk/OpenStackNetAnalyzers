@@ -111,7 +111,7 @@
             if (propertySymbol != null)
             {
                 ITypeSymbol propertyType = propertySymbol.Type;
-                if (string.Equals("ImmutableArray`1", propertyType?.MetadataName, StringComparison.Ordinal))
+                if (propertyType.IsImmutableArray())
                     defaultValueToken = "DefaultArrayIfNotIncluded";
             }
 

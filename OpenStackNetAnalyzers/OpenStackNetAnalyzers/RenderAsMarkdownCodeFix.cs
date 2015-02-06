@@ -22,6 +22,9 @@
         private static readonly ImmutableArray<string> _fixableDiagnostics =
             ImmutableArray.Create(RenderAsMarkdownAnalyzer.DiagnosticId);
 
+        private static readonly SyntaxAnnotation UnnecessaryParagraphAnnotation =
+            new SyntaxAnnotation("OpenStack:UnnecessaryParagraph");
+
         public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
         {
             return _fixableDiagnostics;
@@ -119,7 +122,8 @@
                 return context.Document;
 
             // Remove unnecessary nested paragraph elements
-            contentsOnly = contentsOnly.ReplaceNodes(contentsOnly.DescendantNodes().OfType<XmlElementSyntax>(), RemoveNestedParagraphs);
+            contentsOnly = contentsOnly.ReplaceNodes(contentsOnly.DescendantNodes().OfType<XmlElementSyntax>(), MarkUnnecessaryParagraphs);
+            contentsOnly = contentsOnly.ReplaceNodes(contentsOnly.DescendantNodes().OfType<XmlElementSyntax>(), RemoveUnnecessaryParagraphs);
 
             SyntaxNode root = await context.Document.GetSyntaxRootAsync(cancellationToken);
             SyntaxNode newRoot = root.ReplaceNode(documentationCommentTriviaSyntax, contentsOnly);
@@ -129,13 +133,34 @@
             return context.Document.WithSyntaxRoot(newRoot);
         }
 
-        private SyntaxNode RemoveNestedParagraphs(SyntaxNode originalNode, SyntaxNode rewrittenNode)
+        private SyntaxNode MarkUnnecessaryParagraphs(SyntaxNode originalNode, SyntaxNode rewrittenNode)
         {
             XmlElementSyntax elementSyntax = rewrittenNode as XmlElementSyntax;
             if (!IsUnnecessaryParaElement(elementSyntax))
                 return rewrittenNode;
 
-            return elementSyntax.Content[0].WithTriviaFrom(rewrittenNode);
+            return elementSyntax.WithAdditionalAnnotations(UnnecessaryParagraphAnnotation);
+        }
+
+        private SyntaxNode RemoveUnnecessaryParagraphs(XmlElementSyntax originalNode, XmlElementSyntax rewrittenNode)
+        {
+            bool hasUnnecessary = false;
+            SyntaxList<XmlNodeSyntax> content = rewrittenNode.Content;
+            for (int i = 0; i < content.Count; i++)
+            {
+                if (content[i].HasAnnotation(UnnecessaryParagraphAnnotation))
+                {
+                    hasUnnecessary = true;
+                    XmlElementSyntax unnecessaryElement = (XmlElementSyntax)content[i];
+                    content = content.ReplaceRange(unnecessaryElement, unnecessaryElement.Content);
+                    i += unnecessaryElement.Content.Count;
+                }
+            }
+
+            if (!hasUnnecessary)
+                return rewrittenNode;
+
+            return rewrittenNode.WithContent(content);
         }
 
         private static bool IsUnnecessaryParaElement(XmlElementSyntax elementSyntax)

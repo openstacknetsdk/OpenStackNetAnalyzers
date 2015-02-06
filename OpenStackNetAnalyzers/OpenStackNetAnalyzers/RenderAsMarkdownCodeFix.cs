@@ -139,10 +139,22 @@
         private SyntaxNode MarkUnnecessaryParagraphs(SyntaxNode originalNode, SyntaxNode rewrittenNode)
         {
             XmlElementSyntax elementSyntax = rewrittenNode as XmlElementSyntax;
-            if (!IsUnnecessaryParaElement(elementSyntax))
-                return rewrittenNode;
+            if (IsUnnecessaryParaElement(elementSyntax))
+                return elementSyntax.WithAdditionalAnnotations(UnnecessaryParagraphAnnotation);
 
-            return elementSyntax.WithAdditionalAnnotations(UnnecessaryParagraphAnnotation);
+            if (string.Equals("summary", elementSyntax?.StartTag?.Name?.ToString(), StringComparison.Ordinal))
+            {
+                SyntaxList<XmlNodeSyntax> trimmedContent = elementSyntax.Content.WithoutFirstAndLastNewlines();
+                if (trimmedContent.Count == 1
+                    && IsParaElement(trimmedContent[0] as XmlElementSyntax)
+                    && !HasAttributes(trimmedContent[0] as XmlElementSyntax))
+                {
+                    XmlNodeSyntax paraToRemove = elementSyntax.Content.GetFirstXmlElement("para");
+                    return elementSyntax.ReplaceNode(paraToRemove, paraToRemove.WithAdditionalAnnotations(UnnecessaryParagraphAnnotation));
+                }
+            }
+
+            return rewrittenNode;
         }
 
         private SyntaxNode RemoveUnnecessaryParagraphs(XmlElementSyntax originalNode, XmlElementSyntax rewrittenNode)
@@ -203,7 +215,7 @@
 
         private static bool HasAttributes(XmlElementSyntax syntax)
         {
-            return syntax.StartTag?.Attributes.Count > 0;
+            return syntax?.StartTag?.Attributes.Count > 0;
         }
 
         private static bool IsParaElement(XmlElementSyntax syntax)

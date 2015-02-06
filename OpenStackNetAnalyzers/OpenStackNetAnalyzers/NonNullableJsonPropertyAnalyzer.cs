@@ -56,14 +56,14 @@
 
         private void AnalyzeSymbol(SymbolAnalysisContext context, ISymbol symbol, ITypeSymbol type)
         {
+            if (!type.IsNonNullableValueType())
+                return;
+
             if (type.IsImmutableArray())
             {
                 // special-case this value type
                 return;
             }
-
-            if (!type.IsNonNullableValueType())
-                return;
 
             AttributeData jsonPropertyAttribute = GetJsonPropertyAttributeData(symbol.GetAttributes());
             if (jsonPropertyAttribute == null)

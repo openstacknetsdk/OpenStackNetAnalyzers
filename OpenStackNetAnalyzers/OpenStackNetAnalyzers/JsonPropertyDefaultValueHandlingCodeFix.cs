@@ -18,17 +18,14 @@
         private static readonly ImmutableArray<string> _fixableDiagnostics =
             ImmutableArray.Create(JsonPropertyDefaultValueHandlingAnalyzer.DiagnosticId);
 
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return _fixableDiagnostics;
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds => _fixableDiagnostics;
 
         public override FixAllProvider GetFixAllProvider()
         {
             return WellKnownFixAllProviders.BatchFixer;
         }
 
-        public override async Task ComputeFixesAsync(CodeFixContext context)
+        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             foreach (var diagnostic in context.Diagnostics)
             {
@@ -86,7 +83,7 @@
 
                 SyntaxNode newRoot = documentRoot.ReplaceNode(syntax, newAttribute);
                 Document newDocument = context.Document.WithSyntaxRoot(newRoot);
-                context.RegisterFix(CodeAction.Create("Add DefaultValueHandling.Ignore", newDocument), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create("Add DefaultValueHandling.Ignore", _ => Task.FromResult(newDocument)), diagnostic);
             }
         }
     }

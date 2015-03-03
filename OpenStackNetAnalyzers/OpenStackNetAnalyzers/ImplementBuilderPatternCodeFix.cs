@@ -20,10 +20,7 @@
         private static readonly ImmutableArray<string> _fixableDiagnostics =
             ImmutableArray.Create(ImplementBuilderPatternAnalyzer.DiagnosticId);
 
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return _fixableDiagnostics;
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds => _fixableDiagnostics;
 
         public override FixAllProvider GetFixAllProvider()
         {
@@ -31,7 +28,7 @@
             return null;
         }
 
-        public override async Task ComputeFixesAsync(CodeFixContext context)
+        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             foreach (var diagnostic in context.Diagnostics)
             {
@@ -52,7 +49,7 @@
                     continue;
 
                 string description = string.Format("Implement builder method 'With{0}'", propertyDeclaration.Identifier.ValueText);
-                context.RegisterFix(CodeAction.Create(description, cancellationToken => CreateChangedSolution(context, classDeclarationSyntax, propertyDeclaration, cancellationToken)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create(description, cancellationToken => CreateChangedSolution(context, classDeclarationSyntax, propertyDeclaration, cancellationToken)), diagnostic);
             }
         }
 

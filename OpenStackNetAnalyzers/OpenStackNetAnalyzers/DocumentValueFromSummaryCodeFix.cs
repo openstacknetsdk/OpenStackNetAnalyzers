@@ -19,17 +19,14 @@
         private static readonly ImmutableArray<string> _fixableDiagnostics =
             ImmutableArray.Create(DocumentValueFromSummaryAnalyzer.DiagnosticId);
 
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return _fixableDiagnostics;
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds => _fixableDiagnostics;
 
         public override FixAllProvider GetFixAllProvider()
         {
             return WellKnownFixAllProviders.BatchFixer;
         }
 
-        public override async Task ComputeFixesAsync(CodeFixContext context)
+        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             foreach (var diagnostic in context.Diagnostics)
             {
@@ -46,7 +43,7 @@
                     continue;
 
                 string description = "Document value from summary";
-                context.RegisterFix(CodeAction.Create(description, cancellationToken => CreateChangedDocument(context, propertyDeclarationSyntax, cancellationToken)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create(description, cancellationToken => CreateChangedDocument(context, propertyDeclarationSyntax, cancellationToken)), diagnostic);
             }
         }
 
@@ -99,7 +96,7 @@
                         if (index >= 0)
                             valueText = valueText.Remove(index, 5);
 
-                        SyntaxToken replaced = SyntaxFactory.Token(getsToken.LeadingTrivia, getsToken.CSharpKind(), text, valueText, getsToken.TrailingTrivia);
+                        SyntaxToken replaced = SyntaxFactory.Token(getsToken.LeadingTrivia, getsToken.Kind(), text, valueText, getsToken.TrailingTrivia);
                         summaryContent = summaryContent.Replace(firstText, firstText.ReplaceToken(getsToken, replaced));
                     }
                 }
@@ -148,7 +145,7 @@
 
         private bool IsContentElement(XmlNodeSyntax syntax)
         {
-            switch (syntax.CSharpKind())
+            switch (syntax.Kind())
             {
             case SyntaxKind.XmlCDataSection:
             case SyntaxKind.XmlElement:

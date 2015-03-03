@@ -35,7 +35,7 @@
                 if (!string.Equals(diagnostic.Id, ImplementBuilderPatternAnalyzer.DiagnosticId, StringComparison.Ordinal))
                     continue;
 
-                var documentRoot = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
+                var documentRoot = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
                 SyntaxNode syntax = documentRoot.FindNode(diagnostic.Location.SourceSpan);
                 if (syntax == null)
                     continue;
@@ -95,7 +95,7 @@
                 if (extensionsDocument == null)
                     return solution;
 
-                SyntaxNode extensionsRoot = await extensionsDocument.GetSyntaxRootAsync(cancellationToken);
+                SyntaxNode extensionsRoot = await extensionsDocument.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
                 ClassDeclarationSyntax extensionsClass = extensionsRoot.FindNode(location.SourceSpan, getInnermostNodeForTie: true).FirstAncestorOrSelf<ClassDeclarationSyntax>();
                 if (extensionsClass == null)
                     return solution;

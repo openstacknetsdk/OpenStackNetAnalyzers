@@ -32,7 +32,7 @@
                 if (!string.Equals(diagnostic.Id, JsonPropertyDefaultValueHandlingAnalyzer.DiagnosticId, StringComparison.Ordinal))
                     continue;
 
-                var documentRoot = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
+                var documentRoot = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
                 AttributeSyntax syntax = documentRoot.FindNode(diagnostic.Location.SourceSpan) as AttributeSyntax;
                 if (syntax == null)
                     continue;

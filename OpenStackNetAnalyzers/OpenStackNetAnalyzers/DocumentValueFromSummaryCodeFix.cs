@@ -33,7 +33,7 @@
                 if (!string.Equals(diagnostic.Id, DocumentValueFromSummaryAnalyzer.DiagnosticId, StringComparison.Ordinal))
                     continue;
 
-                var documentRoot = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
+                var documentRoot = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
                 SyntaxNode syntax = documentRoot.FindNode(diagnostic.Location.SourceSpan);
                 if (syntax == null)
                     continue;
@@ -103,7 +103,7 @@
             }
 
             string defaultValueToken = "NullIfNotIncluded";
-            SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(cancellationToken);
+            SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
             IPropertySymbol propertySymbol = semanticModel.GetDeclaredSymbol(propertyDeclarationSyntax);
             if (propertySymbol != null)
             {
@@ -138,7 +138,7 @@
                     leadingNewLine,
                     valueElement)));
 
-            SyntaxNode root = await context.Document.GetSyntaxRootAsync(cancellationToken);
+            SyntaxNode root = await context.Document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             SyntaxNode newRoot = root.ReplaceNode(documentationComment, newDocumentationComment);
             return context.Document.WithSyntaxRoot(newRoot);
         }

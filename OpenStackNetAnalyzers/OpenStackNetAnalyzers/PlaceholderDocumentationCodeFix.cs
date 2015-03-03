@@ -32,7 +32,7 @@
                 if (!string.Equals(diagnostic.Id, PlaceholderDocumentationAnalyzer.DiagnosticId, StringComparison.Ordinal))
                     continue;
 
-                var documentRoot = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
+                var documentRoot = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
                 SyntaxNode syntax = documentRoot.FindNode(diagnostic.Location.SourceSpan, findInsideTrivia: true, getInnermostNodeForTie: true);
                 if (syntax == null)
                     continue;
@@ -71,7 +71,7 @@
             trailingTrivia = trailingTrivia.AddRange(elementSyntax.EndTag.GetTrailingTrivia());
             content = content.Replace(content[content.Count - 1], content[content.Count - 1].WithTrailingTrivia(trailingTrivia));
 
-            SyntaxNode root = await context.Document.GetSyntaxRootAsync(cancellationToken);
+            SyntaxNode root = await context.Document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             SyntaxNode newRoot = root.ReplaceNode(elementSyntax, content);
             return context.Document.WithSyntaxRoot(newRoot);
         }

@@ -34,7 +34,7 @@
                 if (!string.Equals(diagnostic.Id, DocumentDelegatingApiCallAnalyzer.DiagnosticId, StringComparison.Ordinal))
                     continue;
 
-                var documentRoot = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
+                var documentRoot = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
                 SyntaxNode syntax = documentRoot.FindNode(diagnostic.Location.SourceSpan);
                 if (syntax == null)
                     continue;
@@ -52,7 +52,7 @@
         {
             string serviceInterfaceName = "IUnknownService";
             string serviceExtensionsClassName = "UnknownServiceExtensions";
-            INamedTypeSymbol serviceInterface = await GetServiceInterfaceAsync(context, classDeclarationSyntax, cancellationToken);
+            INamedTypeSymbol serviceInterface = await GetServiceInterfaceAsync(context, classDeclarationSyntax, cancellationToken).ConfigureAwait(false);
             if (serviceInterface != null)
             {
                 serviceInterfaceName = serviceInterface.MetadataName;
@@ -72,8 +72,8 @@
 
             ClassDeclarationSyntax newClassDeclaration = classDeclarationSyntax;
 
-            ConstructorDeclarationSyntax constructor = await FindApiCallConstructorAsync(context, classDeclarationSyntax, cancellationToken);
-            ConstructorDeclarationSyntax newConstructor = await DocumentConstructorAsync(context, constructor, cancellationToken);
+            ConstructorDeclarationSyntax constructor = await FindApiCallConstructorAsync(context, classDeclarationSyntax, cancellationToken).ConfigureAwait(false);
+            ConstructorDeclarationSyntax newConstructor = await DocumentConstructorAsync(context, constructor, cancellationToken).ConfigureAwait(false);
             if (newConstructor != null)
                 newClassDeclaration = newClassDeclaration.ReplaceNode(constructor, newConstructor);
 
@@ -97,7 +97,7 @@
             SyntaxTrivia documentationTrivia = SyntaxFactory.Trivia(documentationComment);
             newClassDeclaration = newClassDeclaration.WithLeadingTrivia(newClassDeclaration.GetLeadingTrivia().Add(documentationTrivia));
 
-            SyntaxNode root = await context.Document.GetSyntaxRootAsync(cancellationToken);
+            SyntaxNode root = await context.Document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             SyntaxNode newRoot = root.ReplaceNode(classDeclarationSyntax, newClassDeclaration);
             return context.Document.WithSyntaxRoot(newRoot);
         }
@@ -107,7 +107,7 @@
             if (constructor == null)
                 return null;
 
-            SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(cancellationToken);
+            SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
             INamedTypeSymbol apiCallClass = semanticModel.GetDeclaredSymbol(constructor.FirstAncestorOrSelf<ClassDeclarationSyntax>(), cancellationToken);
             string parameterName = constructor.ParameterList.Parameters[0].Identifier.ValueText;
 
@@ -163,7 +163,7 @@
                     continue;
 
                 if (semanticModel == null)
-                    semanticModel = await context.Document.GetSemanticModelAsync(cancellationToken);
+                    semanticModel = await context.Document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 
                 INamedTypeSymbol symbol = semanticModel.GetSymbolInfo(parameterType, cancellationToken).Symbol as INamedTypeSymbol;
                 if (symbol == null || !symbol.IsGenericType)
@@ -233,7 +233,7 @@
 
         private async Task<INamedTypeSymbol> GetServiceInterfaceAsync(CodeFixContext context, ClassDeclarationSyntax classDeclarationSyntax, CancellationToken cancellationToken)
         {
-            SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(cancellationToken);
+            SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
             INamedTypeSymbol apiCallSymbol = semanticModel.GetDeclaredSymbol(classDeclarationSyntax, cancellationToken);
             foreach (INamedTypeSymbol type in apiCallSymbol.ContainingNamespace.GetTypeMembers())
             {

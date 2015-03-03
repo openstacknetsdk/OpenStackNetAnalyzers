@@ -70,9 +70,8 @@ namespace TestHelper
             foreach (var project in projects)
             {
                 var compilation = await project.GetCompilationAsync(cancellationToken).ConfigureAwait(false);
-                var driver = AnalyzerDriver.Create(compilation, ImmutableArray.Create(analyzer), null, out compilation, cancellationToken);
-                var discarded = compilation.GetDiagnostics(cancellationToken);
-                var diags = await driver.GetDiagnosticsAsync().ConfigureAwait(false);
+                var compilationWithAnalyzers = compilation.WithAnalyzers(ImmutableArray.Create(analyzer), null, cancellationToken);
+                var diags = await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().ConfigureAwait(false);
                 foreach (var diag in diags)
                 {
                     if (diag.Location == Location.None || diag.Location.IsInMetadata)
@@ -106,7 +105,7 @@ namespace TestHelper
         /// <see cref="Diagnostic.Location"/>.</returns>
         private static Diagnostic[] SortDistinctDiagnostics(IEnumerable<Diagnostic> diagnostics)
         {
-            return diagnostics.OrderBy(d => d.Location.SourceSpan.Start).Distinct(default(DiagnosticEqualityComparer)).ToArray();
+            return diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
         }
 
         #endregion
@@ -170,7 +169,7 @@ namespace TestHelper
 
             var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
 
-            var solution = new CustomWorkspace()
+            var solution = new AdhocWorkspace()
                 .CurrentSolution
                 .AddProject(projectId, TestProjectName, TestProjectName, language)
                 .AddMetadataReference(projectId, CorlibReference)
@@ -190,43 +189,5 @@ namespace TestHelper
             return solution.GetProject(projectId);
         }
         #endregion
-
-        /// <summary>
-        /// A little helper to be able to use Enumerable.Distinct. Currently Roslyn does have a bug so that Diagnostic.GetHashCode()
-        /// is not implemented correctly. <see href="https://github.com/dotnet/roslyn/issues/57"/>.
-        /// </summary>
-        struct DiagnosticEqualityComparer : IEqualityComparer<Diagnostic>
-        {
-            public bool Equals(Diagnostic x, Diagnostic y)
-            {
-                return (x == null && y == null)
-                    || x.Equals(y);
-            }
-
-            public int GetHashCode(Diagnostic obj)
-            {
-                return Combine(obj.Descriptor,
-                         Combine(obj.Location.GetHashCode(),
-                          Combine(obj.Severity.GetHashCode(), obj.WarningLevel)
-                        ));
-            }
-
-            int Combine<T>(T newKeyPart, int currentKey) where T : class
-            {
-                int hash = unchecked(currentKey * (int)0xA5555529);
-
-                if (newKeyPart != null)
-                {
-                    return unchecked(hash + newKeyPart.GetHashCode());
-                }
-
-                return hash;
-            }
-            int Combine(int newKey, int currentKey)
-            {
-                return unchecked((currentKey * (int)0xA5555529) + newKey);
-            }
-        }
     }
 }
-

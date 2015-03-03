@@ -20,17 +20,14 @@
         private static readonly ImmutableArray<string> _fixableDiagnostics =
             ImmutableArray.Create(DocumentDelegatingApiCallAnalyzer.DiagnosticId);
 
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return _fixableDiagnostics;
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds => _fixableDiagnostics;
 
         public override FixAllProvider GetFixAllProvider()
         {
             return WellKnownFixAllProviders.BatchFixer;
         }
 
-        public override async Task ComputeFixesAsync(CodeFixContext context)
+        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             foreach (var diagnostic in context.Diagnostics)
             {
@@ -47,7 +44,7 @@
                     continue;
 
                 string description = "Add documentation for delegating HTTP API call";
-                context.RegisterFix(CodeAction.Create(description, cancellationToken => CreateChangedDocument(context, classDeclarationSyntax, cancellationToken)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create(description, cancellationToken => CreateChangedDocument(context, classDeclarationSyntax, cancellationToken)), diagnostic);
             }
         }
 

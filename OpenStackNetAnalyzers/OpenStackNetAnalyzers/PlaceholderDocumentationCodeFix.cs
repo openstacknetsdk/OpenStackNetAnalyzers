@@ -17,10 +17,7 @@
         private static readonly ImmutableArray<string> _fixableDiagnostics =
             ImmutableArray.Create(PlaceholderDocumentationAnalyzer.DiagnosticId);
 
-        public sealed override ImmutableArray<string> GetFixableDiagnosticIds()
-        {
-            return _fixableDiagnostics;
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds => _fixableDiagnostics;
 
         public override FixAllProvider GetFixAllProvider()
         {
@@ -28,7 +25,7 @@
             return null;
         }
 
-        public override async Task ComputeFixesAsync(CodeFixContext context)
+        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             foreach (var diagnostic in context.Diagnostics)
             {
@@ -54,7 +51,7 @@
                 }
 
                 string description = "Finalize placeholder text";
-                context.RegisterFix(CodeAction.Create(description, cancellationToken => CreateChangedDocument(context, xmlElementSyntax, cancellationToken)), diagnostic);
+                context.RegisterCodeFix(CodeAction.Create(description, cancellationToken => CreateChangedDocument(context, xmlElementSyntax, cancellationToken)), diagnostic);
             }
         }
 

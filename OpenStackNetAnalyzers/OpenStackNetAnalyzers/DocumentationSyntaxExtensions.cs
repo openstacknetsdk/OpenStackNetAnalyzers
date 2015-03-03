@@ -163,7 +163,7 @@
                     {
                         SyntaxToken newFirstToken = SyntaxFactory.Token(
                             firstTextToken.LeadingTrivia,
-                            firstTextToken.CSharpKind(),
+                            firstTextToken.Kind(),
                             trimmed,
                             firstTextToken.ValueText.TrimStart(),
                             firstTextToken.TrailingTrivia);

@@ -32,7 +32,7 @@
         public override void Initialize(AnalysisContext context)
         {
             context.RegisterSymbolAction(HandleField, SymbolKind.Field);
-            context.RegisterSymbolAction(HandleParameter, SymbolKind.Parameter);
+            context.RegisterSymbolAction(HandleMethod, SymbolKind.Method);
             context.RegisterSymbolAction(HandleProperty, SymbolKind.Property);
         }
 
@@ -42,9 +42,18 @@
             AnalyzeSymbol(context, symbol, symbol.Type);
         }
 
-        private void HandleParameter(SymbolAnalysisContext context)
+        private void HandleMethod(SymbolAnalysisContext context)
         {
-            IParameterSymbol symbol = (IParameterSymbol)context.Symbol;
+            IMethodSymbol symbol = (IMethodSymbol)context.Symbol;
+            if (symbol.MethodKind != MethodKind.Constructor)
+                return;
+
+            foreach (var parameter in symbol.Parameters)
+                HandleParameter(context, parameter);
+        }
+
+        private void HandleParameter(SymbolAnalysisContext context, IParameterSymbol symbol)
+        {
             AnalyzeSymbol(context, symbol, symbol.Type);
         }
 

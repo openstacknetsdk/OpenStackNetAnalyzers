@@ -88,4 +88,5 @@ if (-not (Test-Path 'nuget')) {
 	mkdir "nuget"
 }
 
-&$nuget 'pack' "..\OpenStackNetAnalyzers\OpenStackNetAnalyzers\bin\$BuildConfig\OpenStackNetAnalyzers.nuspec" '-OutputDirectory' 'nuget' '-Prop' "Configuration=$BuildConfig" '-Version' "$Version" '-Symbols'
+Copy-Item "..\OpenStackNetAnalyzers\OpenStackNetAnalyzers\bin\$BuildConfig\OpenStackNetAnalyzers.$Version.nupkg" 'nuget'
+Copy-Item "..\OpenStackNetAnalyzers\OpenStackNetAnalyzers\bin\$BuildConfig\OpenStackNetAnalyzers.$Version.symbols.nupkg" 'nuget'

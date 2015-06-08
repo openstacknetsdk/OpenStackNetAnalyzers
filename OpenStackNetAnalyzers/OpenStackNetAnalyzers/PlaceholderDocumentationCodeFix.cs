@@ -10,7 +10,7 @@
     using Microsoft.CodeAnalysis.CodeFixes;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    [ExportCodeFixProvider(nameof(PlaceholderDocumentationCodeFix), LanguageNames.CSharp)]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(PlaceholderDocumentationCodeFix))]
     [Shared]
     public class PlaceholderDocumentationCodeFix : CodeFixProvider
     {

@@ -12,7 +12,7 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    [ExportCodeFixProvider(nameof(DocumentDelegatingApiCallCodeFix), LanguageNames.CSharp)]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DocumentDelegatingApiCallCodeFix))]
     [Shared]
     public class DocumentValueFromSummaryCodeFix : CodeFixProvider
     {

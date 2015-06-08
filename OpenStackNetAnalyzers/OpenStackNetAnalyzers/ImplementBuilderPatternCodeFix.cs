@@ -13,7 +13,7 @@
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Simplification;
 
-    [ExportCodeFixProvider(nameof(ImplementBuilderPatternCodeFix), LanguageNames.CSharp)]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ImplementBuilderPatternCodeFix))]
     [Shared]
     public class ImplementBuilderPatternCodeFix : CodeFixProvider
     {

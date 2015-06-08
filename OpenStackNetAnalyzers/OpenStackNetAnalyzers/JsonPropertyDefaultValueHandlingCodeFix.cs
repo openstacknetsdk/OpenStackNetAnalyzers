@@ -11,7 +11,7 @@
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Simplification;
 
-    [ExportCodeFixProvider(nameof(JsonPropertyDefaultValueHandlingCodeFix), LanguageNames.CSharp)]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(JsonPropertyDefaultValueHandlingCodeFix))]
     [Shared]
     public class JsonPropertyDefaultValueHandlingCodeFix : CodeFixProvider
     {

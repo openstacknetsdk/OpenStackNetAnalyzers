@@ -13,7 +13,7 @@
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Simplification;
 
-    [ExportCodeFixProvider(nameof(JsonObjectOptInCodeFix), LanguageNames.CSharp)]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(JsonObjectOptInCodeFix))]
     [Shared]
     public class JsonObjectOptInCodeFix : CodeFixProvider
     {

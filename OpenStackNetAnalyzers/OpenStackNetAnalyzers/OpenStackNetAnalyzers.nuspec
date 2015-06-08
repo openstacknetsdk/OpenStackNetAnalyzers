@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0"?>
 <package>
-  <metadata>
+  <metadata minClientVersion="2.7">
     <id>OpenStackNetAnalyzers</id>
     <version>0.0.0.0</version>
     <title>OpenStack.NET Analyzers</title>
@@ -13,6 +13,7 @@
     <releaseNotes>https://github.com/openstacknetsdk/OpenStackNetAnalyzers/releases/${version}</releaseNotes>
     <copyright>Rackspace</copyright>
     <tags>openstack roslyn diagnostic analyzers</tags>
+    <developmentDependency>true</developmentDependency>
   </metadata>
   <files>
 

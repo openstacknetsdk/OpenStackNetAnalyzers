@@ -16,20 +16,16 @@
   </metadata>
   <files>
 
-    <!--
-      Note: this package specification is copied to the output folder, and the build script uses it from there. Relative
-      paths in 'include' and 'exclude' attributes should be relative to the output folder.
-    -->
-
     <!-- Binaries and symbols -->
-    <file src="*.dll" target="tools\analyzers\" exclude="**\Microsoft.CodeAnalysis.*;**\System.Collections.Immutable.*;**\System.Reflection.Metadata.*" />
-    <file src="*.pdb" target="tools\analyzers\" exclude="**\Microsoft.CodeAnalysis.*;**\System.Collections.Immutable.*;**\System.Reflection.Metadata.*" />
+    <file src="bin\$Configuration$\OpenStackNetAnalyzers.dll" target="tools\analyzers\C#" />
+    <file src="bin\$Configuration$\OpenStackNetAnalyzers.pdb" target="tools\analyzers\C#" />
 
     <!-- Scripts -->
-    <file src="tools\*.ps1" target="tools\" />
+    <file src="tools\install.ps1" target="tools\" />
+    <file src="tools\uninstall.ps1" target="tools\" />
 
     <!-- Source code -->
-    <file exclude="..\..\obj\**\*.cs" src="..\..\**\*.cs" target="src"/>
+    <file src="**\*.cs" exclude="obj\**\*.cs" target="src"/>
 
   </files>
 </package>
